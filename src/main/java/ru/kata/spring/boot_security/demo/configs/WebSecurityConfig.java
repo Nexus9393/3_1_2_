@@ -34,8 +34,8 @@ public class WebSecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin").hasAuthority("ADMIN") // Без префикса ROLE_
-                        .requestMatchers("/user").hasAuthority("USER")   // Без префикса ROLE_
+                        .requestMatchers("/admin").hasAuthority("ADMIN")
+                        .requestMatchers("/user").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/", "/login").permitAll()
                         .anyRequest().authenticated()
                 )
