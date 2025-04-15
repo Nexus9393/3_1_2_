@@ -2,6 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Admin Page</title>
+    <style>
+        .error { color: red; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
 </head>
 <body>
 <h1>Admin Panel</h1>
@@ -11,18 +17,26 @@
         <th>ID</th>
         <th>Name</th>
         <th>Email</th>
+        <th>Roles</th>
         <th>Actions</th>
     </tr>
     <tr th:each="user : ${users}">
         <td th:text="${user.id}"></td>
         <td th:text="${user.name}"></td>
         <td th:text="${user.email}"></td>
+        <td th:text="${user.roles}"></td>
         <td>
             <form th:action="@{/admin/save}" method="post" style="display:inline;">
                 <input type="hidden" name="id" th:value="${user.id}"/>
                 <input type="text" name="name" th:value="${user.name}"/>
                 <input type="text" name="email" th:value="${user.email}"/>
                 <input type="text" name="password" placeholder="New password"/>
+                <select name="roleIds" multiple>
+                    <option th:each="role : ${allRoles}"
+                            th:value="${role.id}"
+                            th:text="${role.name}"
+                            th:selected="${user.roles.contains(role)}"></option>
+                </select>
                 <button type="submit">Update</button>
             </form>
             <form th:action="@{/admin/delete}" method="post" style="display:inline;">
@@ -33,10 +47,26 @@
     </tr>
 </table>
 <h2>Add New User</h2>
-<form th:action="@{/admin/save}" method="post">
-    <label>Name: <input type="text" name="name"/></label><br/>
-    <label>Email: <input type="text" name="email"/></label><br/>
-    <label>Password: <input type="password" name="password"/></label><br/>
+<div th:if="${#fields.hasErrors('newUser.*')}" class="error">
+    <p th:each="err : ${#fields.errors('newUser.*')}" th:text="${err}"></p>
+</div>
+<div th:if="${errorMessage}" class="error">
+    <p th:text="${errorMessage}"></p>
+</div>
+<form th:action="@{/admin/save}" method="post" th:object="${newUser}">
+    <label>Name: <input type="text" th:field="*{name}"/></label>
+    <span th:if="${#fields.hasErrors('name')}" class="error" th:errors="*{name}"></span><br/>
+    <label>Email: <input type="text" th:field="*{email}"/></label>
+    <span th:if="${#fields.hasErrors('email')}" class="error" th:errors="*{email}"></span><br/>
+    <label>Password: <input type="password" th:field="*{password}"/></label>
+    <span th:if="${#fields.hasErrors('password')}" class="error" th:errors="*{password}"></span><br/>
+    <label>Roles:
+        <select name="roleIds" multiple>
+            <option th:each="role : ${allRoles}"
+                    th:value="${role.id}"
+                    th:text="${role.name}"></option>
+        </select>
+    </label><br/>
     <button type="submit">Add User</button>
 </form>
 <form th:action="@{/logout}" method="post">

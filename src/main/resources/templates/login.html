@@ -2,9 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Login</title>
+    <style>
+        .error { color: red; }
+        .message { color: green; }
+    </style>
 </head>
 <body>
 <h2>Login</h2>
+<div th:if="${param.error}" class="error">
+    Invalid email or password.
+</div>
+<div th:if="${param.logout}" class="message">
+    You have been logged out successfully.
+</div>
 <form method="post" th:action="@{/login}">
     <label>Email: <input type="text" name="username" placeholder="Email" /></label><br>
     <label>Password: <input type="password" name="password" placeholder="Password" /></label><br>

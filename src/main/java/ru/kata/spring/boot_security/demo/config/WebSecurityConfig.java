@@ -1,9 +1,8 @@
-package ru.kata.spring.boot_security.demo.configs;
+package ru.kata.spring.boot_security.demo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -14,23 +13,28 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.security.CustomUserDetailsService;
+
+import java.util.logging.Logger;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final UserService userService;
+    private static final Logger logger = Logger.getLogger(WebSecurityConfig.class.getName());
+
+    private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationSuccessHandler successHandler;
 
     @Autowired
-    public WebSecurityConfig(@Lazy UserService userService, AuthenticationSuccessHandler successHandler) {
-        this.userService = userService;
+    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService, AuthenticationSuccessHandler successHandler) {
+        this.customUserDetailsService = customUserDetailsService;
         this.successHandler = successHandler;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        logger.info("Configuring security filter chain...");
         http
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
@@ -41,7 +45,9 @@ public class WebSecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/login")
                         .successHandler(successHandler)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -54,23 +60,27 @@ public class WebSecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        logger.info("Creating AuthenticationManager...");
         return authConfig.getAuthenticationManager();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return userService;
+        logger.info("Creating UserDetailsService...");
+        return customUserDetailsService;
     }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        logger.info("Creating BCryptPasswordEncoder...");
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
+        logger.info("Creating AuthenticationProvider...");
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userService);
+        authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(bCryptPasswordEncoder());
         return authProvider;
     }
