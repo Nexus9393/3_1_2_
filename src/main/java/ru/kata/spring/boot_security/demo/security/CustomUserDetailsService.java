@@ -1,40 +1,41 @@
 package ru.kata.spring.boot_security.demo.security;
 
-import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
-
-import java.util.logging.Logger;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private static final Logger logger = Logger.getLogger(CustomUserDetailsService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
+    private final UserRepository userRepository;
 
-    private final UserRepository userRepo;
-
-    @Autowired
     public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepo = userRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        logger.info("Attempting to load user by email: " + email);
-        User user = userRepo.findByEmail(email)
+        logger.info("Attempting to load user by email: {}", email);
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
-                    logger.warning("User not found: " + email);
-                    return new UsernameNotFoundException("User not found: " + email);
+                    logger.warn("User not found with email: {}", email);
+                    return new UsernameNotFoundException("User not found with email: " + email);
                 });
+        logger.info("User found: {}, password: {}", user.getEmail(), user.getPassword());
+
         Hibernate.initialize(user.getRoles());
-        logger.info("User found: " + email + ", roles: " + user.getRoles() + ", password hash: " + user.getPassword());
+        logger.info("User roles: {}", user.getRoles());
+
+        logger.info("User authenticated: {}", user.getEmail());
         return user;
     }
 }

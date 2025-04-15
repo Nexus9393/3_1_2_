@@ -1,0 +1,10 @@
+.modal-content {
+    border-radius: 10px;
+}
+.modal-header.bg-danger {
+    background-color: #dc3545;
+    color: white;
+}
+.modal-body p {
+    margin-bottom: 10px;
+}

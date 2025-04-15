@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -10,13 +12,11 @@ import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
 
-    private static final Logger logger = Logger.getLogger(DatabaseInitializer.class.getName());
-
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
     private final UserService userService;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
@@ -30,17 +30,14 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Очистка существующих данных
         logger.info("Clearing existing users and roles...");
         userRepository.deleteAll();
         roleRepository.deleteAll();
 
-        // Инициализация ролей
         logger.info("Initializing roles...");
         Role adminRole = initializeRole("ADMIN");
         Role userRole = initializeRole("USER");
 
-        // Инициализация пользователя admin
         logger.info("Initializing admin user...");
         initializeUser(
                 "Admin",
@@ -49,7 +46,6 @@ public class DatabaseInitializer implements CommandLineRunner {
                 Set.of(adminRole)
         );
 
-        // Инициализация пользователя user
         logger.info("Initializing user...");
         initializeUser(
                 "User",
@@ -57,32 +53,40 @@ public class DatabaseInitializer implements CommandLineRunner {
                 "user123",
                 Set.of(userRole)
         );
+
+        userRepository.findByEmail("admin@example.com").ifPresent(user -> {
+            logger.info("Admin user in DB: email={}, password={}, roles={}", user.getEmail(), user.getPassword(), user.getRoles());
+        });
+        userRepository.findByEmail("user@example.com").ifPresent(user -> {
+            logger.info("User in DB: email={}, password={}, roles={}", user.getEmail(), user.getPassword(), user.getRoles());
+        });
     }
 
     private Role initializeRole(String roleName) {
         Role role = roleRepository.findByName(roleName);
         if (role == null) {
-            logger.info("Creating role: " + roleName);
+            logger.info("Creating role: {}", roleName);
             role = new Role(roleName);
             roleRepository.save(role);
         } else {
-            logger.info("Role already exists: " + roleName);
+            logger.info("Role already exists: {}", roleName);
         }
+        logger.info("Role created/found: {} with ID: {}", roleName, role.getId());
         return role;
     }
 
     private void initializeUser(String name, String email, String password, Set<Role> roles) {
         if (userRepository.findByEmail(email).isEmpty()) {
-            logger.info("Creating user: " + email);
+            logger.info("Creating user: {}", email);
             User user = new User();
             user.setName(name);
             user.setEmail(email);
             user.setPassword(password);
             user.setRoles(new HashSet<>(roles));
             userService.addUser(user);
-            logger.info("User created: " + email + " with roles: " + roles);
+            logger.info("User created: {} with roles: {}", email, roles);
         } else {
-            logger.info("User already exists: " + email);
+            logger.info("User already exists: {}", email);
         }
     }
 }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New User</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <style>
+        .form-container {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header :: body"></div>
+<div class="container">
+    <div class="row">
+        <div th:replace="fragments/sidebar :: body"></div>
+        <div class="col-md-10">
+            <h2>Add New User</h2>
+            <div class="form-container">
+                <form th:action="@{/admin/add}" th:object="${user}" method="post">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Enter name">
+                        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Enter email">
+                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Enter password">
+                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="roles">Roles</label>
+                        <select class="form-control" id="roles" th:field="*{roles}" multiple>
+                            <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-add btn-block">Add new user</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>

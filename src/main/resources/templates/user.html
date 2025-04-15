@@ -1,14 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>User Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
 </head>
 <body>
-<h1>Welcome, <span th:text="${user != null ? user.name : 'Guest'}"></span>!</h1>
-<p>Email: <span th:text="${user != null ? user.email : 'N/A'}"></span></p>
-<p>Roles: <span th:text="${user != null ? user.roles : 'N/A'}"></span></p>
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
+<div th:replace="fragments/header :: body"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="fragments/sidebar :: body"></div>
+        <div class="col-md-10">
+            <div class="profile-card">
+                <img th:src="@{/img/avatar.jpg}" alt="User Avatar" class="profile-avatar">
+                <h2>User information-page</h2>
+                <div th:if="${user == null}">
+                    <p>User is null</p>
+                </div>
+                <div th:if="${user != null}">
+                    <table class="table">
+                        <tr>
+                            <th>ID</th>
+                            <td th:text="${user.id} ?: 'N/A'"></td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td th:text="${user.name} ?: 'N/A'"></td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td th:text="${user.email} ?: 'N/A'"></td>
+                        </tr>
+                        <tr>
+                            <th>Roles</th>
+                            <td>
+                                    <span th:if="${user.roles != null}">
+                                        <span th:each="role, iterStat : ${user.roles}" th:text="${role.name} + (${!iterStat.last} ? ', ' : '')"></span>
+                                    </span>
+                                <span th:if="${user.roles == null}">No roles</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
 </html>

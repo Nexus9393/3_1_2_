@@ -1,24 +1,63 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
     <style>
-        .error { color: red; }
-        .message { color: green; }
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            position: relative;
+        }
+        .form-group input {
+            padding-left: 40px;
+        }
+        .form-group i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
-<h2>Login</h2>
-<div th:if="${param.error}" class="error">
-    Invalid email or password.
+<div class="login-form" role="main">
+    <h2>Please sign in</h2>
+    <div class="error-message" th:if="${param.error}">
+        Invalid email or password. Please try again.
+    </div>
+    <form method="post" th:action="@{/login}">
+        <div class="form-group">
+            <i class="fas fa-user" aria-hidden="true"></i>
+            <input type="text" name="username" placeholder="Email address" class="form-control" aria-label="Email address">
+        </div>
+        <div class="form-group">
+            <i class="fas fa-lock" aria-hidden="true"></i>
+            <input type="password" name="password" placeholder="Password" class="form-control" aria-label="Password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+    </form>
 </div>
-<div th:if="${param.logout}" class="message">
-    You have been logged out successfully.
-</div>
-<form method="post" th:action="@{/login}">
-    <label>Email: <input type="text" name="username" placeholder="Email" /></label><br>
-    <label>Password: <input type="password" name="password" placeholder="Password" /></label><br>
-    <button type="submit">Login</button>
-</form>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
 </html>

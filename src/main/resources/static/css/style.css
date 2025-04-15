@@ -1,0 +1,73 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #f7f7f7, #e0e0e0);
+}
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+}
+.navbar a {
+    color: white;
+    text-decoration: none;
+}
+.navbar a:hover {
+    text-decoration: underline;
+}
+.sidebar {
+    background-color: #f8f9fa;
+    padding: 20px;
+    height: 100vh;
+}
+.sidebar a {
+    display: block;
+    margin-bottom: 10px;
+    color: #007bff;
+    text-decoration: none;
+}
+.sidebar a:hover {
+    text-decoration: underline;
+}
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+.profile-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 20px auto;
+    max-width: 600px;
+}
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.3s;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+.btn-add {
+    background-color: #28a745;
+    color: white;
+    transition: background-color 0.3s;
+}
+.btn-add:hover {
+    background-color: #218838;
+}
+.btn-edit {
+    background-color: #17a2b8;
+    color: white;
+}
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
