@@ -55,10 +55,10 @@ public class DatabaseInitializer implements CommandLineRunner {
         );
 
         userRepository.findByEmail("admin@example.com").ifPresent(user -> {
-            logger.info("Admin user in DB: email={}, password={}, roles={}", user.getEmail(), user.getPassword(), user.getRoles());
+            logger.info("Admin user in DB: email={}, roles={}", user.getEmail(), user.getRoles());
         });
         userRepository.findByEmail("user@example.com").ifPresent(user -> {
-            logger.info("User in DB: email={}, password={}, roles={}", user.getEmail(), user.getPassword(), user.getRoles());
+            logger.info("User in DB: email={}, roles={}", user.getEmail(), user.getRoles());
         });
     }
 
@@ -81,7 +81,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             User user = new User();
             user.setName(name);
             user.setEmail(email);
-            user.setPassword(password);
+            user.setPassword(password); // Password will be encoded in UserService
             user.setRoles(new HashSet<>(roles));
             userService.addUser(user);
             logger.info("User created: {} with roles: {}", email, roles);

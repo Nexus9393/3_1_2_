@@ -35,8 +35,9 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Email already exists: " + user.getEmail());
         }
         String rawPassword = user.getPassword();
-        logger.info("Saving user with raw password (for testing): {}", rawPassword);
-        user.setPassword(rawPassword);
+        logger.info("Encoding password for user: {}", user.getEmail());
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        user.setPassword(encodedPassword);
         userRepository.save(user);
         logger.info("User saved: {}", user.getEmail());
     }

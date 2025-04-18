@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import ru.kata.spring.boot_security.demo.security.CustomUserDetailsService;
@@ -38,7 +36,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("Configuring security filter chain...");
         http
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/admin").hasAuthority("ADMIN")
                         .requestMatchers("/user").hasAnyAuthority("USER", "ADMIN")
@@ -76,15 +74,9 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         logger.info("Creating BCryptPasswordEncoder...");
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        logger.info("Using NoOpPasswordEncoder for testing...");
-        return NoOpPasswordEncoder.getInstance();
     }
 
     @Bean

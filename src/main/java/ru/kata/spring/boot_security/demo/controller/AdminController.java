@@ -11,21 +11,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.List;
+
+import ru.kata.spring.boot_security.demo.service.RoleService;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
     private final UserService userService;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
-    public AdminController(UserService userService, RoleRepository roleRepository) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
     }
 
     @GetMapping
@@ -35,21 +36,21 @@ public class AdminController {
             Hibernate.initialize(user.getRoles());
         }
         model.addAttribute("users", users);
-        model.addAttribute("roles", roleRepository.findAll());
+        model.addAttribute("roles", roleService.getAllRoles());
         return "admin/users";
     }
 
     @GetMapping("/add")
     public String showAddUserForm(Model model) {
         model.addAttribute("user", new User());
-        model.addAttribute("roles", roleRepository.findAll());
+        model.addAttribute("roles", roleService.getAllRoles());
         return "admin/add_user";
     }
 
     @PostMapping("/add")
     public String addUser(@ModelAttribute("user") @Valid User user, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("roles", roleRepository.findAll());
+            model.addAttribute("roles", roleService.getAllRoles());
             return "admin/add_user";
         }
         userService.addUser(user);
