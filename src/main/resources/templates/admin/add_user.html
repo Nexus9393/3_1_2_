@@ -28,28 +28,38 @@
             <div class="form-container">
                 <form th:action="@{/admin/add}" th:object="${user}" method="post">
                     <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Enter name">
-                        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                        <label for="firstName">First name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" th:value="*{firstName}">
+                        <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" th:value="*{lastName}">
+                        <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" class="form-control" id="age" name="age" th:value="*{age}">
+                        <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Enter email">
+                        <input type="email" class="form-control" id="email" name="email" th:value="*{email}">
                         <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Enter password">
+                        <input type="password" class="form-control" id="password" name="password">
                         <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label for="roles">Roles</label>
-                        <select class="form-control" id="roles" th:field="*{roles}" multiple>
+                        <label for="roles">Role</label>
+                        <select multiple class="form-control" id="roles" name="roles" required>
                             <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
                         </select>
                         <span th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}" class="text-danger"></span>
                     </div>
-                    <button type="submit" class="btn btn-add btn-block">Add new user</button>
+                    <button type="submit" class="btn btn-primary">Add User</button>
                 </form>
             </div>
         </div>

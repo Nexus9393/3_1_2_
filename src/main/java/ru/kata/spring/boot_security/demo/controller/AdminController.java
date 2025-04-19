@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,11 +38,9 @@ public class AdminController {
     @GetMapping
     public String showUsers(Model model) {
         List<User> users = userService.getAllUsers();
-        for (User user : users) {
-            Hibernate.initialize(user.getRoles());
-        }
         model.addAttribute("users", users);
         model.addAttribute("roles", roleService.getAllRoles());
+        model.addAttribute("user", new User());
         return "admin/users";
     }
 
@@ -53,15 +52,38 @@ public class AdminController {
     }
 
     @PostMapping("/add")
-    public String addUser(@ModelAttribute("user") @Valid User user, BindingResult result, Model model) {
-        if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            result.rejectValue("roles", "error.user", "At least one role must be selected");
+    public String addUser(@ModelAttribute("user") @Valid User user,
+                          @RequestParam(value = "roles", required = false) List<Long> roleIds,
+                          BindingResult result, Model model) {
+        System.out.println("Received: firstName=" + user.getFirstName() +
+                ", lastName=" + user.getLastName() +
+                ", age=" + user.getAge() +
+                ", email=" + user.getEmail() +
+                ", roleIds=" + roleIds);
+
+        if (roleIds == null || roleIds.isEmpty()) {
+            result.addError(new FieldError("user", "roles", "At least one role must be selected"));
         }
+
         if (result.hasErrors()) {
+            System.out.println("Validation errors detected: " + result.getAllErrors());
+            List<User> users = userService.getAllUsers();
+            model.addAttribute("users", users);
             model.addAttribute("roles", roleService.getAllRoles());
-            return "admin/add_user";
+            return "admin/users";
         }
+
+        Set<Role> roles = roleIds.stream()
+                .map(id -> roleService.getAllRoles().stream()
+                        .filter(role -> role.getId().equals(id))
+                        .findFirst()
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        user.setRoles(roles);
+
         userService.addUser(user);
+        System.out.println("Called addUser for email=" + user.getEmail());
         return "redirect:/admin";
     }
 
@@ -69,8 +91,12 @@ public class AdminController {
     public String editUser(@ModelAttribute("user") @Valid User user,
                            @RequestParam(value = "roles", required = false) List<Long> roleIds,
                            BindingResult result, Model model) {
-        System.out.println("Received: id=" + user.getId() + ", name=" + user.getName() +
-                ", email=" + user.getEmail() + ", roleIds=" + roleIds);
+        System.out.println("Received: id=" + user.getId() +
+                ", firstName=" + user.getFirstName() +
+                ", lastName=" + user.getLastName() +
+                ", age=" + user.getAge() +
+                ", email=" + user.getEmail() +
+                ", roleIds=" + roleIds);
         if (result.hasErrors()) {
             System.out.println("Validation errors detected");
             List<User> users = userService.getAllUsers();

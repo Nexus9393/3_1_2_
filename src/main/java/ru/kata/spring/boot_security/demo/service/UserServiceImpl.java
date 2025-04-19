@@ -59,7 +59,9 @@ public class UserServiceImpl implements UserService {
         if (userWithSameEmail.isPresent() && !userWithSameEmail.get().getId().equals(user.getId())) {
             throw new IllegalArgumentException("Email already exists: " + user.getEmail());
         }
-        existingUser.setName(user.getName());
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setAge(user.getAge());
         existingUser.setEmail(user.getEmail());
         existingUser.setRoles(user.getRoles());
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {

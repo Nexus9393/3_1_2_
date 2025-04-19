@@ -41,6 +41,8 @@ public class DatabaseInitializer implements CommandLineRunner {
         logger.info("Initializing admin user...");
         initializeUser(
                 "Admin",
+                "User",
+                30,
                 "admin@example.com",
                 "admin123",
                 Set.of(adminRole)
@@ -48,7 +50,9 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         logger.info("Initializing user...");
         initializeUser(
+                "Regular",
                 "User",
+                25,
                 "user@example.com",
                 "user123",
                 Set.of(userRole)
@@ -75,13 +79,15 @@ public class DatabaseInitializer implements CommandLineRunner {
         return role;
     }
 
-    private void initializeUser(String name, String email, String password, Set<Role> roles) {
+    private void initializeUser(String firstName, String lastName, Integer age, String email, String password, Set<Role> roles) {
         if (userRepository.findByEmail(email).isEmpty()) {
             logger.info("Creating user: {}", email);
             User user = new User();
-            user.setName(name);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setAge(age);
             user.setEmail(email);
-            user.setPassword(password); // Password will be encoded in UserService
+            user.setPassword(password);
             user.setRoles(new HashSet<>(roles));
             userService.addUser(user);
             logger.info("User created: {} with roles: {}", email, roles);

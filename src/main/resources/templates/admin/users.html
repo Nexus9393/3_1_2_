@@ -30,25 +30,32 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Name</th>
+                                <th>First name</th>
+                                <th>Last name</th>
+                                <th>Age</th>
                                 <th>Email</th>
-                                <th>Roles</th>
-                                <th>Actions</th>
+                                <th>Role</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="user : ${users}">
                                 <td th:text="${user.id} ?: 'N/A'"></td>
-                                <td th:text="${user.name} ?: 'N/A'"></td>
+                                <td th:text="${user.firstName} ?: 'N/A'"></td>
+                                <td th:text="${user.lastName} ?: 'N/A'"></td>
+                                <td th:text="${user.age} ?: 'N/A'"></td>
                                 <td th:text="${user.email} ?: 'N/A'"></td>
                                 <td>
-                                            <span th:if="${user.roles != null}">
-                                                <span th:each="role, iterStat : ${user.roles}" th:text="${role.name} + (${!iterStat.last} ? ', ' : '')"></span>
-                                            </span>
+                                    <span th:if="${user.roles != null}">
+                                        <span th:each="role, iterStat : ${user.roles}" th:text="${role.name} + (${!iterStat.last} ? ', ' : '')"></span>
+                                    </span>
                                     <span th:if="${user.roles == null}">No roles</span>
                                 </td>
                                 <td>
                                     <button class="btn btn-edit btn-sm" data-toggle="modal" data-target="#editUserModal">Edit</button>
+                                </td>
+                                <td>
                                     <button class="btn btn-delete btn-sm" data-toggle="modal" data-target="#deleteUserModal">Delete</button>
                                 </td>
                             </tr>
