@@ -10,10 +10,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import ru.kata.spring.boot_security.demo.service.RoleService;
 
@@ -49,6 +54,9 @@ public class AdminController {
 
     @PostMapping("/add")
     public String addUser(@ModelAttribute("user") @Valid User user, BindingResult result, Model model) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            result.rejectValue("roles", "error.user", "At least one role must be selected");
+        }
         if (result.hasErrors()) {
             model.addAttribute("roles", roleService.getAllRoles());
             return "admin/add_user";
@@ -58,11 +66,32 @@ public class AdminController {
     }
 
     @PostMapping("/edit")
-    public String editUser(@ModelAttribute("user") @Valid User user, BindingResult result) {
+    public String editUser(@ModelAttribute("user") @Valid User user,
+                           @RequestParam(value = "roles", required = false) List<Long> roleIds,
+                           BindingResult result, Model model) {
+        System.out.println("Received: id=" + user.getId() + ", name=" + user.getName() +
+                ", email=" + user.getEmail() + ", roleIds=" + roleIds);
         if (result.hasErrors()) {
+            System.out.println("Validation errors detected");
+            List<User> users = userService.getAllUsers();
+            model.addAttribute("users", users);
+            model.addAttribute("roles", roleService.getAllRoles());
             return "admin/users";
         }
+        if (roleIds != null && !roleIds.isEmpty()) {
+            Set<Role> roles = roleIds.stream()
+                    .map(id -> roleService.getAllRoles().stream()
+                            .filter(role -> role.getId().equals(id))
+                            .findFirst()
+                            .orElse(null))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+            user.setRoles(roles);
+        } else {
+            user.setRoles(new HashSet<>());
+        }
         userService.updateUser(user);
+        System.out.println("Called updateUser for id=" + user.getId());
         return "redirect:/admin";
     }
 

@@ -47,6 +47,7 @@
                         <select class="form-control" id="roles" th:field="*{roles}" multiple>
                             <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
                         </select>
+                        <span th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-add btn-block">Add new user</button>
                 </form>
